@@ -4,17 +4,27 @@ const list = require('./list');
 const DEFAULT_HASH = 'md5';
 let app = express();
 
-let get_hash = (hashname, value) => {
-    return crypto.createHash(hashname).update(value).digest('hex');
+let current_queues = {};
+
+let get_hash = (hash_name, value) => {
+    return crypto.createHash(hash_name).update(value).digest('hex');
 };
 
-let generate_list = (list) => {
-    return list.map(name => [get_hash(DEFAULT_HASH, name), name])
+let generate_list = (queue_list) => {
+    return queue_list.map(name => [get_hash(DEFAULT_HASH, name), name])
         .sort((a, b) => a[0] > b[0])
-        .map(node => node[1])
+        .map((node, i) => [i+1, node[1]])
 };
 
-let generated_list = generate_list(list);
+for (let queue_name of Object.keys(list)) {
+    current_queues[queue_name] = generate_list(list[queue_name]);
+}
 
-for (const name of generated_list) console.log(name);
+app.get('/', function (req, res) {
+    res.send(current_queues);
+});
+
+app.listen(12000, function () {
+});
+
 
