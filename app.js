@@ -1,7 +1,7 @@
 let express = require('express');
 let crypto = require('crypto');
 const list = require('./list');
-const DEFAULT_HASH = 'md5';
+const DEFAULT_HASH = 'sha1';
 let app = express();
 
 let current_queues = {};

@@ -45,7 +45,7 @@ const p3117 = [
 ];
 list["p3117"] = p3117;
 
-const ipm1c = [...p3117, ...p3118];
+const ipm1c = [...p3118, ...p3117];
 list["ipm1c"] = ipm1c;
 
 module.exports = list;
