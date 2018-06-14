@@ -12,8 +12,12 @@ let get_hash = (hash_name, value) => {
 
 let generate_list = (queue_list) => {
     return queue_list.map(name => [get_hash(DEFAULT_HASH, name), name])
-        .sort((a, b) => a[0] > b[0])
-        .map((node, i) => [i+1, node[1]])
+        .sort(function(a, b){
+            if(a[0] < b[0]) return -1;
+            if(a[0] > b[0]) return 1;
+            return 0;
+        })
+        .map((node, i) => [i+1, [...node]])
 };
 
 for (let queue_name of Object.keys(list)) {
