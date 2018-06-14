@@ -20,6 +20,10 @@ for (let queue_name of Object.keys(list)) {
     current_queues[queue_name] = generate_list(list[queue_name]);
 }
 
+let fs = require('fs');
+fs.writeFile('queues.json', JSON.stringify(current_queues, null, 4));
+
+
 app.get('/', function (req, res) {
     res.send(current_queues);
 });
