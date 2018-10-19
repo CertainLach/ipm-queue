@@ -1,38 +1,36 @@
-let express = require('express');
-let crypto = require('crypto');
+const express = require('express');
+const crypto = require('crypto');
 const list = require('./list');
 const DEFAULT_HASH = 'sha1';
-let app = express();
+const app = express();
 
-let current_queues = {};
+let currentQueues = {};
 
-let get_hash = (hash_name, value) => {
+function getHash(hash_name, value) {
     return crypto.createHash(hash_name).update(value).digest('hex');
 };
 
-let generate_list = (queue_list) => {
-    return queue_list.map(name => [get_hash(DEFAULT_HASH, name), name])
-        .sort(function(a, b){
-            if(a[0] < b[0]) return -1;
-            if(a[0] > b[0]) return 1;
-            return 0;
-        })
-        .map((node, i) => [i+1, [...node]])
+function generateList(queue_list) {
+    return queue_list.map(name => [getHash(DEFAULT_HASH, name), name])
+        .sort((a, b)=>a[0] - b[0])
+        .map((node, i) => [i + 1, [...node]])
 };
 
 for (let queue_name of Object.keys(list)) {
-    current_queues[queue_name] = generate_list(list[queue_name]);
+    currentQueues[queue_name] = generateList(list[queue_name]);
 }
 
 let fs = require('fs');
-fs.writeFile('queues.json', JSON.stringify(current_queues, null, 4));
 
+(async () => {
+    await new Promise(res => {
+        fs.writeFile('queues.json', JSON.stringify(currentQueues, null, 4), res);
+    });
 
-app.get('/', function (req, res) {
-    res.send(current_queues);
-});
+    app.get('/', (req, res) => {
+        res.send(currentQueues);
+    });
 
-app.listen(12000, function () {
-});
-
+    app.listen(12000, () => { });
+})();
 
